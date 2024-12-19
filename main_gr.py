@@ -22,7 +22,7 @@ file_list = []
 ui_file_path = ''
 ui_start_time = ''
 app_path = os.path.dirname(os.path.realpath(__file__))
-gr.set_static_paths(paths=['/mnt/nx/WhisperX_Gradio/upload'])
+# gr.set_static_paths(paths=[str(os.path.join(app_path, 'upload'))])
 
 
 def calculate_md5(file_name, block_size=4096):
@@ -197,7 +197,7 @@ def load_vid(file_list, evt: gr.SelectData):
         # print('file_list:', file_list)
         if file in temp_file:
             file_path = temp_file
-            # print('video_file_path:', file_path)
+            print('video_file_path:', file_path)
     with open(srt_path) as text:
         sub_text = text.read()
     return [file, start_time, sub_text, (file_path, srt_path)]
@@ -510,7 +510,7 @@ with gr.Blocks(
     #     css="footer {visibility: hidden}"
     # )
 favicon_path=os.path.join(app_path, "FAVICON_TLTV_256x256.ico")
-allowed_paths = ['/mnt/nx/WhisperX_Gradio/subs', '/mnt/nx/WhisperX_Gradio/logs', '/mnt/nx/WhisperX_Gradio/upload']
+allowed_paths = [os.path.join(app_path, 'subs'), os.path.join(app_path, 'logs')]
 if __name__ == "__main__":
     main_window.queue()
     main_window.launch(server_name="0.0.0.0", server_port=7860, allowed_paths=allowed_paths, favicon_path=favicon_path)
