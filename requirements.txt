@@ -1,0 +1,9 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
+docker==7.1.0
+ctranslate2==4.4.0
+gradio==5.5.0
+torch==2.2.0
+torchvision==0.17.0
+torchaudio==2.2.0
+numpy==1.26.4
+whisperx @ git+https://github.com/m-bain/whisperx.git@78dcfaab51005aa703ee21375f81ed31bc248560
