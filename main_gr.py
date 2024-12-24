@@ -27,7 +27,7 @@ app_path = os.path.dirname(os.path.realpath(__file__))
 
 def calculate_md5(file_name, block_size=4096):
     hasher = hashlib.md5()
-    with open(file_name, 'rb') as file:
+    with open(file_name, 'rb', encoding="utf-8") as file:
         for chunk in iter(lambda: file.read(block_size), b''):
             hasher.update(chunk)
     return hasher.hexdigest()
@@ -62,7 +62,7 @@ def write_content(srt_path, content):
     file_name, file_ext = os.path.splitext(srt_path)
     if file_ext != '.srt':
         srt_path = os.path.join(app_path, 'subs', f'{file_name}.srt')
-    f = open(srt_path, "w")
+    f = open(srt_path, "w", encoding="utf-8")
     if content:
         f.write(content)
     else:
@@ -84,7 +84,7 @@ def edit_content(file_path, start_time):
     file_name, file_ext = os.path.splitext(file_path)
     srt_path = os.path.join(app_path, 'subs', f'{file_name}.srt')
     try:
-        with open(srt_path, "r") as srt_content:
+        with open(srt_path, "r", encoding="utf-8") as srt_content:
             # ui_srt_file_path = srt_path
             ui_file_path = file_path
             ui_start_time = start_time
@@ -106,12 +106,12 @@ def close_update_srt(ui_content, old_srt_file_list):
     srt_file_list = [os.path.join(app_path, 'subs', os.path.basename(srt_file)) for srt_file in old_srt_file_list]
     if ui_content:
         try:
-            with open(srt_path, "w") as srt_content:
+            with open(srt_path, "w", encoding="utf-8") as srt_content:
                 srt_content.write(ui_content)
         except Exception:
             raise gr.Error("Srt file cannot be written")
     else:
-        with open(srt_path, "w") as srt_content:
+        with open(srt_path, "w", encoding="utf-8") as srt_content:
             srt_content.write('1\n00:00:00,000 --> 00:00:00,001\nnull')
 
     print('srt_path:', srt_path)
@@ -198,7 +198,7 @@ def load_vid(file_list, evt: gr.SelectData):
         if file in temp_file:
             file_path = temp_file
             print('video_file_path:', file_path)
-    with open(srt_path) as text:
+    with open(srt_path, 'r', encoding="utf-8") as text:
         sub_text = text.read()
     return [file, start_time, sub_text, (file_path, srt_path)]
 
@@ -279,6 +279,7 @@ def process_file(model, language, file_list):
         # move_file(temp_file, output_file)
         file_name = os.path.basename(temp_file)
         # print('output_file:', output_file)
+        # srt_content = transcribe(model, lang, temp_file)
         try:
             srt_content = transcribe(model, lang, temp_file)
             # srt_table = open("F_12.Years.a.Slave_2013_CENZ_1080p25_H264_10Mbps.srt", 'r').read()
@@ -302,6 +303,7 @@ def process_file(model, language, file_list):
             logs(log_name, " - Alignment started")
         except Exception:
             status = 'Error'
+            print(datetime.now(tz), '- !!!Transcription failed!!!')
             file_data = [file_name, status, execution_time]
             table_data.append(file_data)
             logs(log_name, " - !!!Transcription failed!!!")
