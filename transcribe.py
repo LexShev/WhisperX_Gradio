@@ -7,9 +7,35 @@ import os
 import re
 
 
+def add_word(new_result_aligned, dict_num, i, seq_words):
+    try:
+
+        new_result_aligned['segments'][dict_num]['words'].append({})
+        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
+            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
+        else:
+            word_list_num = 0
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
+    except Exception:
+        pass
+    new_result_aligned['word_segments'].append({})
+    if len(new_result_aligned['word_segments']) > 0:
+        word_seg_count = len(new_result_aligned['word_segments']) - 1
+    else:
+        word_seg_count = 0
+    try:
+        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
+        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
+        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
+    except Exception:
+        pass
+
 def check_text(aligned):
     new_result_aligned = {'segments': [], 'word_segments': [], 'language': ''}
-    word_seg_count = 0
     segments = aligned['segments']
     word_segments = aligned['word_segments']
     language = aligned['language']
@@ -19,106 +45,65 @@ def check_text(aligned):
         seq_end = seq['end']
         seq_text = seq['text']
         seq_words = seq['words']
-        if not 'Тикабон' in seq_text and not latin(seq_text) > 3:
-            new_result_aligned['segments'].append({})
+        if seq_end - seq_start > 0.5:
+            if not 'Тикабон' in seq_text and not latin(seq_text) > 3:
+                new_result_aligned['segments'].append({})
 
-            if len(new_result_aligned['segments']) > 0:
-                dict_num = len(new_result_aligned['segments']) - 1
-            else:
-                dict_num = 0
-
-            new_result_aligned['segments'][dict_num] = {'start': '', 'end': '', 'text': '', 'words': []}
-            new_result_aligned['segments'][dict_num]['start'] = seq_start
-            new_result_aligned['segments'][dict_num]['end'] = seq_end
-            new_result_aligned['segments'][dict_num]['words'] = []
-            text = []
-            for i in range(len(seq_words)):
-                # new_result_aligned['segments'][num]['words'][i] = {'word': '', 'start': '', 'end': '', 'score': ''}
-                seq_dict_word = seq_words[i]['word']
-
-                if len(seq_dict_word) > 30:
-                    seq_dict_word = seq_dict_word[:30]
-                if i < 3:
-                    new_result_aligned['segments'][dict_num]['words'].append({})
-                    try:
-                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
-                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
-                        else:
-                            word_list_num = 0
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    new_result_aligned['word_segments'].append({})
-                    if len(new_result_aligned['word_segments']) > 0:
-                        word_seg_count = len(new_result_aligned['word_segments']) - 1
-                    else:
-                        word_seg_count = 0
-                    try:
-                        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
-                        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
-                        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    # word_seg_count += 1
-                    # word_segments[num]['word'] = seq_dict_word
-                    text.append(seq_dict_word)
-                elif seq_dict_word != seq_words[i - 3]['word'] or seq_dict_word != seq_words[i - 2]['word'] or seq_dict_word != seq_words[i - 1]['word']:
-                    new_result_aligned['segments'][dict_num]['words'].append({})
-                    try:
-                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
-                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
-                        else:
-                            word_list_num = 0
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    new_result_aligned['word_segments'].append({})
-                    if len(new_result_aligned['word_segments']) > 0:
-                        word_seg_count = len(new_result_aligned['word_segments']) - 1
-                    else:
-                        word_seg_count = 0
-                    try:
-                        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
-                        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
-                        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    # word_seg_count += 1
-                    # word_segments[num]['word'] = seq_dict_word
-                    text.append(seq_dict_word)
+                if len(new_result_aligned['segments']) > 0:
+                    dict_num = len(new_result_aligned['segments']) - 1
                 else:
-                    # new_result_aligned['segments'][num]['words'].append({})
+                    dict_num = 0
 
-                    # dict_word[i] = ''
-                    print('repeated', seq_words[i])
-                    # end_i = seq_words[i]['end']
-                    # seq_words[i - 1]['end'] = end_i
-                    try:
-                        new_result_aligned['segments'][num]['words'][i-1]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count-1]['end'] = seq_words[i]['end']
-                        print("timecode changed")
-                    except Exception:
-                        print("timecode didn't change")
-                        pass
-                    # seq_words[i]['word'] = ''
-                    # word_segments[num]['word'] = ''
-                    # dict_word['word'] = ''
-            new_result_aligned['segments'][dict_num]['text'] = ' '.join(text)
-        else:
-            print("exclusion")
-            # segments[num] = ''
-            # seq['text'] = ''
-            # for dict_word in dict_words:
-            #     print('dict_word deleted', dict_word)
-            #     dict_word['word'] = ''
+                new_result_aligned['segments'][dict_num] = {'start': '', 'end': '', 'text': '', 'words': []}
+                new_result_aligned['segments'][dict_num]['start'] = seq_start
+                new_result_aligned['segments'][dict_num]['end'] = seq_end
+                new_result_aligned['segments'][dict_num]['words'] = []
+                text = []
+                for i in range(len(seq_words)):
+                    # new_result_aligned['segments'][num]['words'][i] = {'word': '', 'start': '', 'end': '', 'score': ''}
+                    seq_dict_word = seq_words[i]['word']
+                    if len(seq_dict_word) > 30:
+                        seq_dict_word = seq_dict_word[:30]
+                    if i <= 3:
+                        add_word(new_result_aligned, dict_num, i, seq_words)
+                        text.append(seq_dict_word)
+                    elif seq_dict_word == seq_words[i - 3]['word'] or seq_dict_word == seq_words[i - 2]['word'] or seq_dict_word == seq_words[i - 1]['word']:
+                        # new_result_aligned['segments'][num]['words'].append({})
+                        # dict_word[i] = ''
+                        print('repeated', seq_words[i])
+                        # end_i = seq_words[i]['end']
+                        # seq_words[i - 1]['end'] = end_i
+                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
+                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
+                        else:
+                            word_list_num = 0
+
+                        if len(new_result_aligned['word_segments']) > 0:
+                            word_seg_count = len(new_result_aligned['word_segments']) - 1
+                        else:
+                            word_seg_count = 0
+                        try:
+                            new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+                            print("timecode_1 changed")
+                            new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+                            print("timecode_2 changed")
+                        except Exception:
+                            print("timecode didn't change")
+                            pass
+                        # seq_words[i]['word'] = ''
+                        # word_segments[num]['word'] = ''
+                        # dict_word['word'] = ''
+                    else:
+                        add_word(new_result_aligned, dict_num, i, seq_words)
+                        text.append(seq_dict_word)
+                new_result_aligned['segments'][dict_num]['text'] = ' '.join(text)
+            else:
+                print("exclusion")
+                # segments[num] = ''
+                # seq['text'] = ''
+                # for dict_word in dict_words:
+                #     print('dict_word deleted', dict_word)
+                #     dict_word['word'] = ''
     new_result_aligned['language'] = language
     print('new_result_aligned', new_result_aligned)
     return new_result_aligned
@@ -140,7 +125,10 @@ def transcribe(model, language, audio_file):
         device,
         compute_type=compute_type,
         language=language,
-        threads=6
+        threads=10,
+        asr_options={'length_penalty': 2,
+                     'repetition_penalty': 1,
+                     "no_repeat_ngram_size": 2}
     )
     audio = whisperx.load_audio(audio_file)
     result_transcribed = model_transcribe.transcribe(
@@ -182,12 +170,17 @@ def transcribe(model, language, audio_file):
         return_char_alignments=False
     )
     result_aligned["language"] = result_transcribed["language"]
-    print(result_aligned["segments"]) # after alignment
+    print('result_aligned_seg', result_aligned["segments"]) # after alignment
     print('result_aligned', result_aligned)
-    result_aligned = check_text(result_aligned)
 
     with open(f'{audio_file[:-4]}_result_aligned.txt', 'w', encoding="utf-8") as file:
-        file.write(str(result_aligned["segments"]))
+        file.write(str(result_aligned))
+    unload_model(model_align)
+
+    result_aligned = check_text(result_aligned)
+
+    with open(f'{audio_file[:-4]}_result_checked.txt', 'w', encoding="utf-8") as file:
+        file.write(str(result_aligned))
     unload_model(model_align)
 
     with io.StringIO() as buffer:

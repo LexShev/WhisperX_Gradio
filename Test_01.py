@@ -1,3 +1,4 @@
+import ast
 import re
 from traceback import print_tb
 
@@ -27,11 +28,14 @@ aligned = {'segments': [{'start': 16.654, 'end': 16.754, 'text': ' Куди!', '
                                                                                                   {'word': 'то', 'start': 21.137, 'end': 21.277, 'score': 0.708},
                                                                                                   {'word': 'и', 'start': 21.357, 'end': 21.417, 'score': 0.667},
                                                                                                   {'word': 'это!', 'start': 21.477, 'end': 21.657, 'score': 0.286}]},
-                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312},
+                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тик, тик, тик тикабон!', 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312},
                                                                                                                      {'word': 'тик,', 'start': 22.058, 'end': 24.479, 'score': 0.959},
                                                                                                                      {'word': 'тик,', 'start': 24.519, 'end': 24.739, 'score': 0.667},
                                                                                                                      {'word': 'тик,', 'start': 24.759, 'end': 24.899, 'score': 0.267},
                                                                                                                      {'word': 'тик,', 'start': 25.0, 'end': 25.16, 'score': 0.433},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
                                                                                                                      {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
                                                                                                                      {'word': 'тикабон!', 'start': 26.14, 'end': 26.681, 'score': 0.607}]},
                         {'start': 27.341, 'end': 30.383, 'text': 'Тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 27.341, 'end': 28.021, 'score': 0.89},
@@ -120,11 +124,14 @@ aligned = {'segments': [{'start': 18.055, 'end': 18.195, 'text': 'Тикабон
                                                                                                   {'word': 'то', 'start': 21.137, 'end': 21.277, 'score': 0.708},
                                                                                                   {'word': 'и', 'start': 21.357, 'end': 21.417, 'score': 0.667},
                                                                                                   {'word': 'это!', 'start': 21.477, 'end': 21.657, 'score': 0.286}]},
-                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312},
+                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312},
                                                                                                                      {'word': 'тик,', 'start': 22.058, 'end': 24.479, 'score': 0.959},
                                                                                                                      {'word': 'тик,', 'start': 24.519, 'end': 24.739, 'score': 0.667},
                                                                                                                      {'word': 'тик,', 'start': 24.759, 'end': 24.899, 'score': 0.267},
                                                                                                                      {'word': 'тик,', 'start': 25.0, 'end': 25.16, 'score': 0.433},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
                                                                                                                      {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
                                                                                                                      {'word': 'тикабон!', 'start': 26.14, 'end': 26.681, 'score': 0.607}]},
                         {'start': 27.341, 'end': 30.383, 'text': 'Тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 27.341, 'end': 28.021, 'score': 0.89},
@@ -177,39 +184,46 @@ aligned = {'segments': [{'start': 18.055, 'end': 18.195, 'text': 'Тикабон
                              {'word': 'коллекция!', 'start': 31.584, 'end': 37.708, 'score': 0.63},
                              {'word': 'Тикабон!', 'start': 37.988, 'end': 42.771, 'score': 0.83}],
            'language': 'ru'}
-# aligned = {'segments':
-#                [{'start': 18.055, 'end': 18.195, 'words': [{'word': 'Тикабон!', 'start': 18.055, 'end': 18.195, 'score': 0.0}],
-#                  'text': 'Тикабон!'},
-#                 {'start': 18.215, 'end': 18.816, 'words': [{'word': 'Здесь', 'start': 18.215, 'end': 18.355, 'score': 0.133},
-#                                                            {'word': 'цвета,', 'start': 18.375, 'end': 18.495, 'score': 0.1},
-#                                                            {'word': 'вот', 'start': 18.535, 'end': 18.595, 'score': 0.0},
-#                                                            {'word': 'предметы!', 'start': 18.615, 'end': 18.816, 'score': 0.083}],
-#                  'text': 'Здесь цвета, вот предметы!'}, {'start': 18.836, 'end': 19.076,
-#                                                          'words': [{'word': 'Тикабон!', 'start': 18.836, 'end': 19.076, 'score': 0.357}],
-#                                                          'text': 'Тикабон!'}, {'start': 20.597, 'end': 21.657, 'words': [{'word': 'Интересно', 'start': 20.597, 'end': 21.117, 'score': 0.401}, {'word': 'то', 'start': 21.137, 'end': 21.277, 'score': 0.708}, {'word': 'и', 'start': 21.357, 'end': 21.417, 'score': 0.667}, {'word': 'это!', 'start': 21.477, 'end': 21.657, 'score': 0.286}], 'text': 'Интересно то и это!'}, {'start': 21.677, 'end': 26.681, 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312}, {'word': 'тик,', 'start': 22.058, 'end': 24.479, 'score': 0.959}, {'word': 'тик,', 'start': 24.519, 'end': 24.739, 'score': 0.667}, {'word': 'тик,', 'start': 24.759, 'end': 24.899, 'score': 0.267}, {}, {}, {'word': 'тикабон!', 'start': 26.14, 'end': 26.681, 'score': 0.607}], 'text': 'Тик, тик, тик, тик, тикабон!'}, {'start': 27.341, 'end': 30.383, 'words': [{'word': 'Тик,', 'start': 27.341, 'end': 28.021, 'score': 0.89}, {'word': 'тик,', 'start': 28.082, 'end': 28.242, 'score': 0.278}, {'word': 'тик,', 'start': 28.262, 'end': 29.162, 'score': 0.591}, {'word': 'тик,', 'start': 29.222, 'end': 29.402, 'score': 0.286}, {}, {}, {'word': 'тикабон!', 'start': 29.843, 'end': 30.383, 'score': 0.429}], 'text': 'Тик, тик, тик, тик, тикабон!'}, {'start': 30.403, 'end': 37.708, 'words': [{'word': 'Тикабон', 'start': 30.403, 'end': 31.564, 'score': 0.461}, {'word': 'коллекция!', 'start': 31.584, 'end': 37.708, 'score': 0.63}], 'text': 'Тикабон коллекция!'}, {'start': 37.988, 'end': 42.771, 'words': [{'word': 'Тикабон!', 'start': 37.988, 'end': 42.771, 'score': 0.83}], 'text': 'Тикабон!'}], 'word_segments': [{'word': 'Тикабон!', 'start': 18.055, 'end': 18.195, 'score': 0.0}, {'word': 'Здесь', 'start': 18.215, 'end': 18.355, 'score': 0.133}, {'word': 'цвета,', 'start': 18.375, 'end': 18.495, 'score': 0.1}, {'word': 'вот', 'start': 18.535, 'end': 18.595, 'score': 0.0}, {'word': 'предметы!', 'start': 18.615, 'end': 18.816, 'score': 0.083}, {'word': 'Тикабон!', 'start': 18.836, 'end': 19.076, 'score': 0.357}, {'word': 'Интересно', 'start': 20.597, 'end': 21.117, 'score': 0.401}, {'word': 'то', 'start': 21.137, 'end': 21.277, 'score': 0.708}, {'word': 'и', 'start': 21.357, 'end': 21.417, 'score': 0.667}, {'word': 'это!', 'start': 21.477, 'end': 21.657, 'score': 0.286}, {'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312}, {'word': 'тик,', 'start': 22.058, 'end': 24.479, 'score': 0.959}, {'word': 'тик,', 'start': 24.519, 'end': 24.739, 'score': 0.667}, {'word': 'тик,', 'start': 24.759, 'end': 24.899, 'score': 0.267}, {'word': 'тикабон!', 'start': 26.14, 'end': 26.681, 'score': 0.607}, {'word': 'Тик,', 'start': 27.341, 'end': 28.021, 'score': 0.89}, {'word': 'тик,', 'start': 28.082, 'end': 28.242, 'score': 0.278}, {'word': 'тик,', 'start': 28.262, 'end': 29.162, 'score': 0.591}, {'word': 'тик,', 'start': 29.222, 'end': 29.402, 'score': 0.286}, {'word': 'тикабон!', 'start': 29.843, 'end': 30.383, 'score': 0.429}, {'word': 'Тикабон', 'start': 30.403, 'end': 31.564, 'score': 0.461}, {'word': 'коллекция!', 'start': 31.584, 'end': 37.708, 'score': 0.63}, {'word': 'Тикабон!', 'start': 37.988, 'end': 42.771, 'score': 0.83}], 'language': 'ru'}
-# aligned = {'segments': [{'start': 4.613, 'end': 10.958, 'text': ' Итак, кто охотится по ночам и пьет кровь?', 'words': [{'word': 'Итак,', 'start': 4.613, 'end': 4.793, 'score': 0.326}, {'word': 'кто', 'start': 4.813, 'end': 4.913, 'score': 0.333}, {'word': 'охотится', 'start': 4.953, 'end': 7.295, 'score': 0.798}, {'word': 'по', 'start': 9.477, 'end': 9.597, 'score': 0.628}, {'word': 'ночам', 'start': 9.617, 'end': 10.037, 'score': 0.581}, {'word': 'и', 'start': 10.057, 'end': 10.137, 'score': 0.748}, {'word': 'пьет', 'start': 10.297, 'end': 10.597, 'score': 0.458}, {'word': 'кровь?', 'start': 10.637, 'end': 10.958, 'score': 0.542}]}, {'start': 10.998, 'end': 12.279, 'text': 'Морбиус 31 августа в 21.15', 'words': [{'word': 'Морбиус', 'start': 10.998, 'end': 11.338, 'score': 0.391}, {'word': '31'}, {'word': 'августа', 'start': 11.398, 'end': 12.179, 'score': 0.741}, {'word': 'в', 'start': 12.219, 'end': 12.279, 'score': 0.659}, {'word': '21.15'}]}], 'word_segments': [{'word': 'Итак,', 'start': 4.613, 'end': 4.793, 'score': 0.326}, {'word': 'кто', 'start': 4.813, 'end': 4.913, 'score': 0.333}, {'word': 'охотится', 'start': 4.953, 'end': 7.295, 'score': 0.798}, {'word': 'по', 'start': 9.477, 'end': 9.597, 'score': 0.628}, {'word': 'ночам', 'start': 9.617, 'end': 10.037, 'score': 0.581}, {'word': 'и', 'start': 10.057, 'end': 10.137, 'score': 0.748}, {'word': 'пьет', 'start': 10.297, 'end': 10.597, 'score': 0.458}, {'word': 'кровь?', 'start': 10.637, 'end': 10.958, 'score': 0.542}, {'word': 'Морбиус', 'start': 10.998, 'end': 11.338, 'score': 0.391}, {'word': '31'}, {'word': 'августа', 'start': 11.398, 'end': 12.179, 'score': 0.741}, {'word': 'в', 'start': 12.219, 'end': 12.279, 'score': 0.659}, {'word': '21.15'}], 'language': 'ru'}
 
-new_result_aligned = {'segments':
-                [{'start': 01.001, 'end': 02.002, 'text': 'Text_1 Text_2', 'words':
-                    [{'word': 'Text_1', 'start': 01.001, 'end': 02.002, 'score': 0.001},
-                     {'word': 'Text_2', 'start': 02.002, 'end': 03.003, 'score': 0.001}]}],
-            'word_segments':
-                [{'word': 'Text_1', 'start': 01.001, 'end': 02.002, 'score': 0.001},
-                 {'word': 'Text_2', 'start': 02.002, 'end': 03.003, 'score': 0.001}],
-            'language': 'ru'}
-print('aligned', aligned)
 
-# my_words =[{'word': 'Ну,', 'start': 2288.537, 'end': 2288.577, 'score': 0.0}, {'word': 'ты', 'start': 2288.597, 'end': 2288.637, 'score': 0.0}, {'word': 'даёшь!', 'start': 2288.657, 'end': 2288.757, 'score': 0.0}]
-# print('my_dict', my_dict)
-# for dicts in my_dict:
-#     # print(dicts['text'])
-#     print([word['word'] for word in dicts['words']])
-def make_segment(seg):
-    pass
+# new_result_aligned = {'segments':
+#                 [{'start': 01.001, 'end': 02.002, 'text': 'Text_1 Text_2', 'words':
+#                     [{'word': 'Text_1', 'start': 01.001, 'end': 02.002, 'score': 0.001},
+#                      {'word': 'Text_2', 'start': 02.002, 'end': 03.003, 'score': 0.001}]}],
+#             'word_segments':
+#                 [{'word': 'Text_1', 'start': 01.001, 'end': 02.002, 'score': 0.001},
+#                  {'word': 'Text_2', 'start': 02.002, 'end': 03.003, 'score': 0.001}],
+#             'language': 'ru'}
+
+def add_word(new_result_aligned, dict_num, i, seq_words):
+    try:
+
+        new_result_aligned['segments'][dict_num]['words'].append({})
+        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
+            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
+        else:
+            word_list_num = 0
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
+    except Exception:
+        pass
+    new_result_aligned['word_segments'].append({})
+    if len(new_result_aligned['word_segments']) > 0:
+        word_seg_count = len(new_result_aligned['word_segments']) - 1
+    else:
+        word_seg_count = 0
+    try:
+        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
+        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
+        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
+    except Exception:
+        pass
 
 def check_text(aligned):
     new_result_aligned = {'segments': [], 'word_segments': [], 'language': ''}
-    word_seg_count = 0
     segments = aligned['segments']
     word_segments = aligned['word_segments']
     language = aligned['language']
@@ -219,106 +233,65 @@ def check_text(aligned):
         seq_end = seq['end']
         seq_text = seq['text']
         seq_words = seq['words']
-        if not 'Тикабон' in seq_text and not latin(seq_text) > 3:
-            new_result_aligned['segments'].append({})
+        if seq_end - seq_start > 0.5:
+            if not 'Тикабон' in seq_text and not latin(seq_text) > 3:
+                new_result_aligned['segments'].append({})
 
-            if len(new_result_aligned['segments']) > 0:
-                dict_num = len(new_result_aligned['segments']) - 1
-            else:
-                dict_num = 0
-
-            new_result_aligned['segments'][dict_num] = {'start': '', 'end': '', 'text': '', 'words': []}
-            new_result_aligned['segments'][dict_num]['start'] = seq_start
-            new_result_aligned['segments'][dict_num]['end'] = seq_end
-            new_result_aligned['segments'][dict_num]['words'] = []
-            text = []
-            for i in range(len(seq_words)):
-                # new_result_aligned['segments'][num]['words'][i] = {'word': '', 'start': '', 'end': '', 'score': ''}
-                seq_dict_word = seq_words[i]['word']
-
-                if len(seq_dict_word) > 30:
-                    seq_dict_word = seq_dict_word[:30]
-                if i < 3:
-                    new_result_aligned['segments'][dict_num]['words'].append({})
-                    try:
-                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
-                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
-                        else:
-                            word_list_num = 0
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    new_result_aligned['word_segments'].append({})
-                    if len(new_result_aligned['word_segments']) > 0:
-                        word_seg_count = len(new_result_aligned['word_segments']) - 1
-                    else:
-                        word_seg_count = 0
-                    try:
-                        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
-                        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
-                        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    # word_seg_count += 1
-                    # word_segments[num]['word'] = seq_dict_word
-                    text.append(seq_dict_word)
-                elif seq_dict_word != seq_words[i - 3]['word'] or seq_dict_word != seq_words[i - 2]['word'] or seq_dict_word != seq_words[i - 1]['word']:
-                    new_result_aligned['segments'][dict_num]['words'].append({})
-                    try:
-                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
-                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
-                        else:
-                            word_list_num = 0
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['word'] = seq_words[i]['word']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = seq_words[i]['start']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                        new_result_aligned['segments'][dict_num]['words'][word_list_num]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    new_result_aligned['word_segments'].append({})
-                    if len(new_result_aligned['word_segments']) > 0:
-                        word_seg_count = len(new_result_aligned['word_segments']) - 1
-                    else:
-                        word_seg_count = 0
-                    try:
-                        new_result_aligned['word_segments'][word_seg_count]['word'] = seq_words[i]['word']
-                        new_result_aligned['word_segments'][word_seg_count]['start'] = seq_words[i]['start']
-                        new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count]['score'] = seq_words[i]['score']
-                    except Exception:
-                        pass
-                    # word_seg_count += 1
-                    # word_segments[num]['word'] = seq_dict_word
-                    text.append(seq_dict_word)
+                if len(new_result_aligned['segments']) > 0:
+                    dict_num = len(new_result_aligned['segments']) - 1
                 else:
-                    # new_result_aligned['segments'][num]['words'].append({})
+                    dict_num = 0
 
-                    # dict_word[i] = ''
-                    print('repeated', seq_words[i])
-                    # end_i = seq_words[i]['end']
-                    # seq_words[i - 1]['end'] = end_i
-                    try:
-                        new_result_aligned['segments'][num]['words'][i - 1]['end'] = seq_words[i]['end']
-                        new_result_aligned['word_segments'][word_seg_count - 1]['end'] = seq_words[i]['end']
-                        print("timecode changed")
-                    except Exception:
-                        print("timecode didn't change")
-                        pass
-                    # seq_words[i]['word'] = ''
-                    # word_segments[num]['word'] = ''
-                    # dict_word['word'] = ''
-            new_result_aligned['segments'][dict_num]['text'] = ' '.join(text)
-        else:
-            print("exclusion")
-            # segments[num] = ''
-            # seq['text'] = ''
-            # for dict_word in dict_words:
-            #     print('dict_word deleted', dict_word)
-            #     dict_word['word'] = ''
+                new_result_aligned['segments'][dict_num] = {'start': '', 'end': '', 'text': '', 'words': []}
+                new_result_aligned['segments'][dict_num]['start'] = seq_start
+                new_result_aligned['segments'][dict_num]['end'] = seq_end
+                new_result_aligned['segments'][dict_num]['words'] = []
+                text = []
+                for i in range(len(seq_words)):
+                    # new_result_aligned['segments'][num]['words'][i] = {'word': '', 'start': '', 'end': '', 'score': ''}
+                    seq_dict_word = seq_words[i]['word']
+                    if len(seq_dict_word) > 30:
+                        seq_dict_word = seq_dict_word[:30]
+                    if i <= 3:
+                        add_word(new_result_aligned, dict_num, i, seq_words)
+                        text.append(seq_dict_word)
+                    elif seq_dict_word == seq_words[i - 3]['word'] or seq_dict_word == seq_words[i - 2]['word'] or seq_dict_word == seq_words[i - 1]['word']:
+                        # new_result_aligned['segments'][num]['words'].append({})
+                        # dict_word[i] = ''
+                        print('repeated', seq_words[i])
+                        # end_i = seq_words[i]['end']
+                        # seq_words[i - 1]['end'] = end_i
+                        if len(new_result_aligned['segments'][dict_num]['words']) > 0:
+                            word_list_num = len(new_result_aligned['segments'][dict_num]['words']) - 1
+                        else:
+                            word_list_num = 0
+
+                        if len(new_result_aligned['word_segments']) > 0:
+                            word_seg_count = len(new_result_aligned['word_segments']) - 1
+                        else:
+                            word_seg_count = 0
+                        try:
+                            new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+                            print("timecode_1 changed")
+                            new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+                            print("timecode_2 changed")
+                        except Exception:
+                            print("timecode didn't change")
+                            pass
+                        # seq_words[i]['word'] = ''
+                        # word_segments[num]['word'] = ''
+                        # dict_word['word'] = ''
+                    else:
+                        add_word(new_result_aligned, dict_num, i, seq_words)
+                        text.append(seq_dict_word)
+                new_result_aligned['segments'][dict_num]['text'] = ' '.join(text)
+            else:
+                print("exclusion")
+                # segments[num] = ''
+                # seq['text'] = ''
+                # for dict_word in dict_words:
+                #     print('dict_word deleted', dict_word)
+                #     dict_word['word'] = ''
     new_result_aligned['language'] = language
     print('new_result_aligned', new_result_aligned)
     return new_result_aligned
@@ -326,6 +299,14 @@ def check_text(aligned):
 def latin(text):
     print('latin_text', text)
     return len(re.findall(r'\w+[A-Za-z]', text))
+
+
+sub = r"C:\Users\a.shevchenko.st14\PycharmProjects\WhisperX_Gradio\subs\F_12.Years.a.Slave_2013_1080p25_H264_10Mbps_result_aligned.txt"
+
+with open(sub, 'r', encoding="utf-8") as text:
+    aligned = text.read()
+print('aligned', aligned)
+aligned = ast.literal_eval(aligned)
 
 check_text(aligned)
 
