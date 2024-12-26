@@ -124,16 +124,19 @@ aligned = {'segments': [{'start': 18.055, 'end': 18.195, 'text': 'Тикабон
                                                                                                   {'word': 'то', 'start': 21.137, 'end': 21.277, 'score': 0.708},
                                                                                                   {'word': 'и', 'start': 21.357, 'end': 21.417, 'score': 0.667},
                                                                                                   {'word': 'это!', 'start': 21.477, 'end': 21.657, 'score': 0.286}]},
-                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 21.677, 'end': 22.038, 'score': 0.312},
-                                                                                                                     {'word': 'тик,', 'start': 22.058, 'end': 24.479, 'score': 0.959},
-                                                                                                                     {'word': 'тик,', 'start': 24.519, 'end': 24.739, 'score': 0.667},
-                                                                                                                     {'word': 'тик,', 'start': 24.759, 'end': 24.899, 'score': 0.267},
-                                                                                                                     {'word': 'тик,', 'start': 25.0, 'end': 25.16, 'score': 0.433},
-                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
-                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
-                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
-                                                                                                                     {'word': 'тик,', 'start': 25.18, 'end': 26.08, 'score': 0.602},
-                                                                                                                     {'word': 'тикабон!', 'start': 26.14, 'end': 26.681, 'score': 0.607}]},
+                        {'start': 21.677, 'end': 26.681, 'text': 'Тик, тик, тик, тик, тик, тик, тик, тик, тик, тик, тик, тикабон!', 'words':
+                                                                                                                    [{'word': 'Тик,', 'start': 21.001, 'end': 22.001, 'score': 0.312},
+                                                                                                                     {'word': 'тик,', 'start': 22.002, 'end': 23.001, 'score': 0.959},
+                                                                                                                     {'word': 'тик,', 'start': 23.002, 'end': 24.001, 'score': 0.667},
+                                                                                                                     {'word': 'тик,', 'start': 24.002, 'end': 25.001, 'score': 0.267},
+                                                                                                                     {'word': 'тик,', 'start': 25.002, 'end': 26.001, 'score': 0.433},
+                                                                                                                     {'word': 'тик,', 'start': 26.002, 'end': 27.001, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 27.002, 'end': 28.001, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 28.002, 'end': 29.001, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 29.002, 'end': 30.001, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 30.002, 'end': 31.001, 'score': 0.602},
+                                                                                                                     {'word': 'тик,', 'start': 35.002, 'end': 32.001, 'score': 0.602},
+                                                                                                                     {'word': 'тикабон!', 'start': 32.002, 'end': 33.001, 'score': 0.607}]},
                         {'start': 27.341, 'end': 30.383, 'text': 'Тик, тик, тик, тик, тик, тик, тикабон!', 'words': [{'word': 'Тик,', 'start': 27.341, 'end': 28.021, 'score': 0.89},
                                                                                                                      {'word': 'тик,', 'start': 28.082, 'end': 28.242, 'score': 0.278},
                                                                                                                      {'word': 'тик,', 'start': 28.262, 'end': 29.162, 'score': 0.591},
@@ -271,10 +274,20 @@ def check_text(aligned):
                         else:
                             word_seg_count = 0
                         try:
-                            new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                            print("timecode_1 changed")
-                            new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                            print("timecode_2 changed")
+                            if seq_words[i]['start'] - seq_words[i-1]['start'] < 3:
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end'] = (new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['start']+seq_words[i]['end'])/2
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end']+0.02
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['end'] = (new_result_aligned['segments'][dict_num]['words'][word_list_num-3]['start']+new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end'])/2
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['start'] = new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['end']+0.02
+
+                                print("timecode_1 changed")
+                                new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+                                new_result_aligned['word_segments'][word_seg_count-1]['end'] = (new_result_aligned['word_segments'][word_seg_count-2]['start'] + seq_words[i]['end'])/2
+                                new_result_aligned['word_segments'][word_seg_count]['start'] = new_result_aligned['word_segments'][word_seg_count-1]['end']+0.02
+                                new_result_aligned['word_segments'][word_seg_count-2]['end'] = (new_result_aligned['word_segments'][word_seg_count-3]['start'] + new_result_aligned['word_segments'][word_seg_count-1]['end'])/2
+                                new_result_aligned['word_segments'][word_seg_count-1]['start'] = new_result_aligned['word_segments'][word_seg_count-2]['end']+0.02
+                                print("timecode_2 changed")
                         except Exception:
                             print("timecode didn't change")
                             pass
@@ -303,10 +316,10 @@ def latin(text):
 
 sub = r"C:\Users\a.shevchenko.st14\PycharmProjects\WhisperX_Gradio\subs\F_12.Years.a.Slave_2013_1080p25_H264_10Mbps_result_aligned.txt"
 
-with open(sub, 'r', encoding="utf-8") as text:
-    aligned = text.read()
-print('aligned', aligned)
-aligned = ast.literal_eval(aligned)
+# with open(sub, 'r', encoding="utf-8") as text:
+#     aligned = text.read()
+# print('aligned', aligned)
+# aligned = ast.literal_eval(aligned)
 
 check_text(aligned)
 

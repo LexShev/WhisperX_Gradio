@@ -83,10 +83,20 @@ def check_text(aligned):
                         else:
                             word_seg_count = 0
                         try:
-                            new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
-                            print("timecode_1 changed")
-                            new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
-                            print("timecode_2 changed")
+                            if seq_words[i]['start'] - seq_words[i-1]['start'] < 3:
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num]['end'] = seq_words[i]['end']
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end'] = (new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['start']+seq_words[i]['end'])/2
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num]['start'] = new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end']+0.02
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['end'] = (new_result_aligned['segments'][dict_num]['words'][word_list_num-3]['start']+new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['end'])/2
+                                new_result_aligned['segments'][dict_num]['words'][word_list_num-1]['start'] = new_result_aligned['segments'][dict_num]['words'][word_list_num-2]['end']+0.02
+
+                                print("timecode_1 changed")
+                                new_result_aligned['word_segments'][word_seg_count]['end'] = seq_words[i]['end']
+                                new_result_aligned['word_segments'][word_seg_count-1]['end'] = (new_result_aligned['word_segments'][word_seg_count-2]['start'] + seq_words[i]['end'])/2
+                                new_result_aligned['word_segments'][word_seg_count]['start'] = new_result_aligned['word_segments'][word_seg_count-1]['end']+0.02
+                                new_result_aligned['word_segments'][word_seg_count-2]['end'] = (new_result_aligned['word_segments'][word_seg_count-3]['start'] + new_result_aligned['word_segments'][word_seg_count-1]['end'])/2
+                                new_result_aligned['word_segments'][word_seg_count-1]['start'] = new_result_aligned['word_segments'][word_seg_count-2]['end']+0.02
+                                print("timecode_2 changed")
                         except Exception:
                             print("timecode didn't change")
                             pass
@@ -223,3 +233,4 @@ def unload_model(model):
     gc.collect()
     torch.cuda.empty_cache()
     del model
+
