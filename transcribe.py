@@ -6,6 +6,7 @@ from whisperx.utils import WriteSRT
 import os
 import re
 
+app_path = os.path.dirname(os.path.realpath(__file__))
 
 def add_word(new_result_aligned, dict_num, i, seq_words):
     try:
@@ -183,13 +184,15 @@ def transcribe(model, language, audio_file):
     print('result_aligned_seg', result_aligned["segments"]) # after alignment
     print('result_aligned', result_aligned)
 
-    with open(f'{audio_file[:-4]}_result_aligned.txt', 'w', encoding="utf-8") as file:
+    result_aligned_log = os.path.join(app_path, 'logs', f'{os.path.splitext(audio_file)[1]}_result_aligned.txt')
+    with open(result_aligned_log, 'w', encoding="utf-8") as file:
         file.write(str(result_aligned))
     unload_model(model_align)
 
     result_aligned = check_text(result_aligned)
 
-    with open(f'{audio_file[:-4]}_result_checked.txt', 'w', encoding="utf-8") as file:
+    result_checked_log = os.path.join(app_path, 'logs', f'{os.path.splitext(audio_file)[1]}_result_checked.txt')
+    with open(result_checked_log, 'w', encoding="utf-8") as file:
         file.write(str(result_aligned))
     unload_model(model_align)
 

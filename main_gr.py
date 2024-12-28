@@ -301,8 +301,9 @@ def process_file(model, language, file_list):
             table_data.append(file_data)
             logs(log_name, " - Transcription finished")
             logs(log_name, " - Alignment started")
-        except Exception:
+        except Exception as e:
             status = 'Error'
+            print(e)
             print(datetime.now(tz), '- !!!Transcription failed!!!')
             file_data = [file_name, status, execution_time]
             table_data.append(file_data)
