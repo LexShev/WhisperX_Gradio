@@ -189,13 +189,6 @@ def transcribe(model, language, audio_file):
         file.write(str(result_aligned))
     unload_model(model_align)
 
-    result_aligned = check_text(result_aligned)
-
-    result_checked_log = os.path.join(app_path, 'logs', f'{os.path.splitext(audio_file)[1]}_result_checked.txt')
-    with open(result_checked_log, 'w', encoding="utf-8") as file:
-        file.write(str(result_aligned))
-    unload_model(model_align)
-
     with io.StringIO() as buffer:
         writesrt = WriteSRT(".")
         print('final_result_aligned', result_aligned)
@@ -212,7 +205,31 @@ def transcribe(model, language, audio_file):
 
         # Now buffer.getvalue() contains the entire SRT content
         srt_content = buffer.getvalue()
-    return srt_content
+
+    result_aligned_checked = check_text(result_aligned)
+
+    result_checked_log = os.path.join(app_path, 'logs', f'{os.path.splitext(audio_file)[1]}_result_checked.txt')
+    with open(result_checked_log, 'w', encoding="utf-8") as file:
+        file.write(str(result_aligned_checked))
+    unload_model(model_align)
+
+    with io.StringIO() as buffer_checked:
+        writesrt = WriteSRT(".")
+        print('final_result_aligned', result_aligned_checked)
+        writesrt.write_result(
+            result_aligned,
+            buffer_checked,
+            {
+                "max_line_width": None,
+                "max_line_count": 2,
+                "highlight_words": False,
+                "preserve_segments": True
+            }
+        )
+
+        # Now buffer.getvalue() contains the entire SRT content
+        srt_content_checked = buffer_checked.getvalue()
+    return srt_content, srt_content_checked
 
 def get_device():
     return "cuda" if torch.cuda.is_available() else "cpu"

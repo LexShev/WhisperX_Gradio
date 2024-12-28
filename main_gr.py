@@ -59,20 +59,14 @@ def create_dir_if_not_exist(dir):
 
 
 def write_content(srt_path, content):
-    file_name, file_ext = os.path.splitext(srt_path)
-    if file_ext != '.srt':
-        srt_path = os.path.join(app_path, 'subs', f'{file_name}.srt')
     f = open(srt_path, "w", encoding="utf-8")
     if content:
         f.write(content)
     else:
         f.write('1\n00:00:00,000 --> 00:00:00,001\nnull')
     f.close()
-    print('srt_path:', srt_path)
     print('subs have written')
 
-# def table_info(evt: gr.SelectData):
-#     return evt
 
 def edit_content(file_path, start_time):
     # global ui_srt_file_path
@@ -91,7 +85,6 @@ def edit_content(file_path, start_time):
             return ui_file_path, ui_start_time, srt_content.read()
     except Exception:
         raise gr.Error("Srt file not found")
-
 
 
 def close_update_srt(ui_content, old_srt_file_list):
@@ -231,7 +224,7 @@ def logs(log_name, text, time=True):
 def process_file(model, language, file_list):
     if not file_list:
         return "Please choose files before submitting."
-    file_name = 'Preparing...'
+    ui_file_name = 'Preparing...'
     global task_number
     create_dir_if_not_exist("upload")
     create_dir_if_not_exist("subs")
@@ -270,34 +263,36 @@ def process_file(model, language, file_list):
         print('language:', lang)
         print('model:', model)
 
-        file_path, file_extension = os.path.splitext(temp_file)
-        print('file_path:', file_path)
+        file_name, file_ext = os.path.splitext(temp_file)
+        print('file_path:', temp_file)
         # md5_hash = calculate_md5(temp_file)
         # print('md5_hash:', md5_hash)
         # output_file = os.path.join(app_path, "upload", os.path.basename(temp_file))
         # print('abs_output_file:', os.path.abspath(output_file))
         # move_file(temp_file, output_file)
-        file_name = os.path.basename(temp_file)
+        ui_file_name = os.path.basename(temp_file)
         # print('output_file:', output_file)
-        # srt_content = transcribe(model, lang, temp_file)
         try:
-            srt_content = transcribe(model, lang, temp_file)
+            srt_content, srt_checked_content = transcribe(model, lang, temp_file)
             # srt_table = open("F_12.Years.a.Slave_2013_CENZ_1080p25_H264_10Mbps.srt", 'r').read()
             # srt_table = [[t] for t in srt_content.read().split('\n')]
             # print('srt_table:', srt_table)
             status = 'Done'
-            output_file_srt = os.path.join(app_path, "subs", f"{os.path.basename(file_path)}.srt")
+
+            output_file_srt = os.path.join(app_path, "subs", f"{os.path.basename(file_name)}.srt")
+            raw_file_srt = os.path.join(app_path, "subs", f"{os.path.basename(file_name)}_raw.srt")
             srt_list.append(output_file_srt)
             print(srt_list)
             print('abspath_output_file_srt:', os.path.abspath(output_file_srt))
-            write_content(output_file_srt, srt_content)
+            write_content(raw_file_srt, srt_content)
+            write_content(output_file_srt, srt_checked_content)
             # move_file(output_file_srt, os.path.splitext(output_file)[0]+'.srt')
             print('srt file created')
             logs(log_name, " - Srt file created")
             end_time = datetime.now(tz)
             execution_time = str(end_time - start_time).split(".")[0]
 
-            file_data = [file_name, status, start_time_frm, execution_time]
+            file_data = [ui_file_name, status, start_time_frm, execution_time]
             table_data.append(file_data)
             logs(log_name, " - Transcription finished")
             logs(log_name, " - Alignment started")
@@ -305,7 +300,7 @@ def process_file(model, language, file_list):
             status = 'Error'
             print(e)
             print(datetime.now(tz), '- !!!Transcription failed!!!')
-            file_data = [file_name, status, execution_time]
+            file_data = [ui_file_name, status, execution_time]
             table_data.append(file_data)
             logs(log_name, " - !!!Transcription failed!!!")
             logs(log_name, os.path.basename(temp_file), False)
@@ -318,13 +313,13 @@ def process_file(model, language, file_list):
         logs(log_name, f'Execution_time: {execution_time}', False)
         logs(log_name, temp_file, False)
         logs(log_name, '-' * 60, False)
-        yield file_name, start_time_frm, srt_content, table_data, srt_list
+        yield ui_file_name, start_time_frm, srt_content, table_data, srt_list
     # sub_zip = create_zip(srt_list)
     # sub_zip = create_zip()
     total_time = str(datetime.now(tz) - total_start_time).split(".")[0]
     logs(log_name, f'Total_time: {total_time}', False)
     logs(log_name, '-' * 60, False)
-    yield file_name, start_time_frm, srt_content, table_data, srt_list
+    yield ui_file_name, start_time_frm, srt_content, table_data, srt_list
 
 def collapse_accord(file_list):
     if file_list:
