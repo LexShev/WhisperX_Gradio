@@ -1,28 +1,20 @@
 import os
 import hashlib
 import shutil
-import time
 
 import gradio as gr
-# import time
 from datetime import datetime, timedelta
 from pytz import timezone
-# import docker
-from zipfile import ZipFile
-
-
-
 from transcribe import transcribe
 from whisperx.utils import LANGUAGES
+
 
 session_id = 1
 task_number = 1
 file_list = []
-# ui_srt_file_path = ''
 ui_file_path = ''
 ui_start_time = ''
 app_path = os.path.dirname(os.path.realpath(__file__))
-# gr.set_static_paths(paths=[str(os.path.join(app_path, 'upload'))])
 
 
 def calculate_md5(file_name, block_size=4096):
@@ -52,11 +44,9 @@ def find_language_code(language):
             print('key:', key)
             return key
 
-
 def create_dir_if_not_exist(dir):
     if not os.path.exists(os.path.join(app_path, dir)):
         os.makedirs(os.path.join(app_path, dir))
-
 
 def write_content(srt_path, content):
     f = open(srt_path, "w", encoding="utf-8")
@@ -65,8 +55,6 @@ def write_content(srt_path, content):
     else:
         f.write('1\n00:00:00,000 --> 00:00:00,001\nnull')
     f.close()
-    print('subs have written')
-
 
 def edit_content(file_path, start_time):
     # global ui_srt_file_path
@@ -91,7 +79,6 @@ def close_update_srt(ui_content, old_srt_file_list):
     # global ui_srt_file_path
     global ui_file_path
     global ui_start_time
-    print('old srt_file_list', old_srt_file_list)
     file_name, file_ext = os.path.splitext(ui_file_path)
     # if file_ext != '.srt':
     srt_path = os.path.join(app_path, 'subs', f'{os.path.basename(file_name)}.srt')
@@ -107,74 +94,7 @@ def close_update_srt(ui_content, old_srt_file_list):
         with open(srt_path, "w", encoding="utf-8") as srt_content:
             srt_content.write('1\n00:00:00,000 --> 00:00:00,001\nnull')
 
-    print('srt_path:', srt_path)
-    print('subs have written')
-    print('new srt_file_list', srt_file_list)
     return ui_file_path, ui_start_time, ui_content, srt_file_list
-
-def update_ui():
-    pass
-
-    # zip_name = f'SUB_ID_{session_id:02d}_Task_{task_number:04d}.zip'
-    # myzip = ZipFile(zip_name, "w")
-    # try:
-    #     myzip.write(srt_path)
-    #     print('ZIP was updated')
-    # except Exception:
-    #     print('ZIP updating ERROR')
-    # finally:
-    #     myzip.close()
-    #     print('updating_zip_name:', os.path.abspath(zip_name))
-
-#
-# def create_zip(table_data):
-#     print('table_data:', table_data)
-#     srt_list = []
-#     if table_data:
-#         for i in range(len(table_data)):
-#             file_path = table_data[i][0]
-#             file_name, file_ext = os.path.splitext(file_path)
-#             srt_file_path = os.path.join("subs", f"{os.path.basename(file_name)}.srt")
-#             srt_list.append(srt_file_path)
-#     zip_name = f'SUB_ID_{session_id:02d}_Task_{task_number:04d}.zip'
-#     myzip = ZipFile(zip_name, "w")
-#     try:
-#         [myzip.write(srt) for srt in srt_list]
-#         print('ZIP archive created')
-#     except Exception:
-#         print('ZIP archive ERROR')
-#     finally:
-#         myzip.close()
-#     print('abs_zip_name:', os.path.abspath(zip_name))
-#     return zip_name
-
-# def create_zip(srt_list):
-#     # sub_zip = os.path.join('')
-#     zip_name = f'SUB_ID_{session_id:02d}_Task_{task_number:04d}.zip'
-#     myzip = ZipFile(zip_name, "w")
-#     try:
-#         [myzip.write(srt) for srt in srt_list]
-#         print('ZIP archive created')
-#     except Exception:
-#         print('ZIP archive ERROR')
-#     finally:
-#         myzip.close()
-#         print('creating_zip_name:', os.path.abspath(zip_name))
-#     return zip_name
-#
-# def update_zip(srt_path):
-#     # sub_zip = os.path.join('')
-#     zip_name = f'SUB_ID_{session_id:02d}_Task_{task_number:04d}.zip'
-#     myzip = ZipFile(zip_name, "w")
-#     try:
-#         myzip.write(srt_path)
-#         print('ZIP was updated')
-#     except Exception:
-#         print('ZIP updating ERROR')
-#     finally:
-#         myzip.close()
-#         print('updating_zip_name:', os.path.abspath(zip_name))
-#     return zip_name
 
 def zip_name(text):
     return f'SUB_ID_{session_id:02d}_Task_{task_number:04d}.zip'
@@ -203,23 +123,6 @@ def logs(log_name, text, time=True):
         else:
             time = ''
         print(time, text, file=file, sep='')
-
-
-# def task_number():
-#     log_list = os.listdir()
-#     fact_task_list = []
-#     for file in log_list:
-#         if file.startswith('LOG'):
-#             fact_task = os.path.splitext(file)[0].split('Task_')[1]
-#             fact_task_list.append(int(fact_task))
-#     print(fact_task_list)
-#     if fact_task_list:
-#         task = max(fact_task_list) + 1
-#     else:
-#         task = 1
-#     return f'{task:04d}'
-
-
 
 def process_file(model, language, file_list):
     if not file_list:
@@ -258,25 +161,12 @@ def process_file(model, language, file_list):
         if not temp_file or not os.path.exists(temp_file):
             # raise gr.Error("This should fail!")
             return "Please upload a file before submitting."
-        print('language_map:', language)
         lang = map_language(language)
-        print('language:', lang)
-        print('model:', model)
 
         file_name, file_ext = os.path.splitext(temp_file)
-        print('file_path:', temp_file)
-        # md5_hash = calculate_md5(temp_file)
-        # print('md5_hash:', md5_hash)
-        # output_file = os.path.join(app_path, "upload", os.path.basename(temp_file))
-        # print('abs_output_file:', os.path.abspath(output_file))
-        # move_file(temp_file, output_file)
         ui_file_name = os.path.basename(temp_file)
-        # print('output_file:', output_file)
         try:
             srt_content, srt_checked_content = transcribe(model, lang, temp_file)
-            # srt_table = open("F_12.Years.a.Slave_2013_CENZ_1080p25_H264_10Mbps.srt", 'r').read()
-            # srt_table = [[t] for t in srt_content.read().split('\n')]
-            # print('srt_table:', srt_table)
             status = 'Done'
 
             output_file_srt = os.path.join(app_path, "subs", f"{os.path.basename(file_name)}.srt")
@@ -330,7 +220,6 @@ def collapse_accord(file_list):
     else:
         return gr_set_accord, gr_in_list_accord, gr_out_file_list, gr_out_table
 
-
 def visible_vid_sub():
     return {gr_vid: gr.Video(visible=True),
             gr_sub_text: gr.Code(visible=True),
@@ -362,16 +251,6 @@ def unvisible_edit_sub_text():
 def exit_fn():
     global session_id
     session_id += 1
-    # file_dir = os.path.join(app_path, "upload")
-    # if file_list:
-    #     for file in file_list:
-    #         try:
-    #             os.remove(file)
-    #             print('Cache deleted successfully')
-    #         except Exception:
-    #             print('ERROR! Cache did not delete')
-    # gr.Blocks.unload()
-    # print('Blocks unloaded')
 
 with gr.Blocks(
         title='Subtitle Transcription',
@@ -380,7 +259,7 @@ with gr.Blocks(
         h1 {text-align: center;
         display:block;
         }''') as main_window:
-    gr.Markdown('# TLTV Subtitle Transcription')
+    gr.Markdown('# FBTV Subtitle Transcription')
     # gr.Markdown('Upload your audio or video file')
     with gr.Row():
         # gr.DownloadButton(label="Download Processed File"),
@@ -420,10 +299,6 @@ with gr.Blocks(
                                         headers=['File', 'Status', 'Start time', 'Total time'],
                                         column_widths=[105, 20, 30, 25],
                                         max_height=275)
-
-
-
-
 
         with gr.Column(scale=1, min_width=300):
             gr_file_name = gr.Textbox(label="Running file name:",
@@ -468,7 +343,6 @@ with gr.Blocks(
                                         interactive=False,
                                         # type="binary",
                                         visible=False)
-
 
             # with gr.Row():
             #     gr_down_sub = gr.DownloadButton(label="Download SUB")

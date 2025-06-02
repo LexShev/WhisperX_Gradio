@@ -84,7 +84,7 @@ def transcribe(model, language, audio_file):
     unload_model(model_align)
 
     with io.StringIO() as buffer:
-        writesrt = WriteSRT(".")
+        writesrt = WriteSRT("..")
         writesrt.write_result(
             result_aligned,
             buffer,
