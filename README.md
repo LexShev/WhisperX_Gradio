@@ -1,6 +1,5 @@
 # WhisperX Web Interface for Broadcast Subtitles
 
-![WhisperX Logo](https://github.com/m-bain/whisperX/raw/main/whisperx-logo.png) *(consider adding your company logo)*
 
 ## Overview
 

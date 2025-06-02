@@ -381,7 +381,7 @@ with gr.Blocks(
     #     allow_flagging="never",
     #     css="footer {visibility: hidden}"
     # )
-favicon_path=os.path.join(app_path, "FAVICON_TLTV_256x256.ico")
+favicon_path=os.path.join(app_path, 'resources', 'logo', "FAVICON_TLTV_256x256.ico")
 allowed_paths = [os.path.join(app_path, 'subs'), os.path.join(app_path, 'logs')]
 if __name__ == "__main__":
     main_window.queue()
