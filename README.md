@@ -1,7 +1,6 @@
 # WhisperX Web Interface for Broadcast Subtitles
 
-![WhisperX Logo](https://github.com/m-bain/whisperX/raw/main/whisperx-logo.png) *(consider adding your company logo)*
-
+![HomePage](/screenshots/home_page.png)
 ## Overview
 
 This project adapts [WhisperX](https://github.com/m-bain/whisperX) into an easy-to-use web interface for our broadcasting company's needs. It enables automated subtitle generation for video content to comply with accessibility regulations for hearing-impaired viewers.
